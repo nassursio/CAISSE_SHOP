@@ -1,8 +1,3 @@
-/* ============================================================
-   CaisseShop — Style global
-   Fidèle à la maquette : fond dégradé bleu, carte blanche,
-   navbar blanche, boutons bleu/rouge/vert
-   ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
@@ -479,3 +474,41 @@ body.page-connexion {
     .caisse-layout  { grid-template-columns: 1fr; }
     .produit-layout { grid-template-columns: 1fr; }
 }
+
+/* ── DETAIL PRODUIT ──────────────────────────────────────── */
+.detail-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 1rem;
+    align-items: start;
+}
+.detail-img-card { padding: 1rem; text-align: center; }
+.detail-img-box {
+    width: 100%; height: 180px;
+    background: var(--gris-bg); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: .8rem; overflow: hidden; position: relative;
+}
+.detail-img-box img { width: 100%; height: 100%; object-fit: cover; }
+.detail-img-placeholder { font-size: .8rem; color: var(--gris-texte); }
+.detail-codebarre-zone { margin: .8rem 0; }
+.codebarre-barres {
+    display: flex; gap: 1px; justify-content: center;
+    align-items: flex-end; height: 55px; margin-bottom: .3rem;
+}
+.codebarre-texte { font-family: monospace; font-size: .88rem; font-weight: 600; }
+.codebarre-label { font-size: .68rem; color: var(--gris-texte); margin-top: .2rem; }
+.btn-modif-photo {
+    width: 100%; padding: .48rem;
+    border: 1px solid var(--gris-bord); background: var(--blanc);
+    border-radius: 6px; font-size: .8rem; cursor: pointer;
+    margin-top: .6rem; transition: background .12s;
+}
+.btn-modif-photo:hover { background: var(--gris-bg); }
+.detail-info-card { padding: 1.2rem; }
+.detail-info-card h2 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; }
+.detail-table { width: 100%; border-collapse: collapse; margin-bottom: 1.2rem; }
+.detail-table tr { border-bottom: 1px solid #F5F5F5; }
+.detail-table td { padding: .6rem .4rem; font-size: .86rem; }
+.detail-label { color: var(--gris-texte); font-weight: 500; width: 180px; }
+.detail-actions { display: flex; gap: .6rem; }
