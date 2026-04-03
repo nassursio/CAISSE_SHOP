@@ -1,35 +1,40 @@
 <?php
 
-require_once 'connexionBDD.php';
+require_once 'connexion.php';
+
+
+
+if (!empty($_SESSION['utilisateur'])) {
+    header('Location: caisse.php');
+    exit;
+}
 
 $erreur = '';
 
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    // trim() supprime les espaces au début et à la fin
-    $email = trim($_POST['email']);
-    $mdp   = trim($_POST['motdepasse']);
+    $email = trim($_POST['email']      ?? '');
+    $mdp   = trim($_POST['motdepasse'] ?? '');
 
-    // Vérifier que les champs ne sont pas vides
+    // Vérifier que les champs sont remplis
     if ($email == '' || $mdp == '') {
         $erreur = 'Veuillez remplir tous les champs.';
-
     } else {
 
-        // On prépare la requête avec :email comme paramètre
+        // Chercher l'utilisateur par son email
         $sql  = 'SELECT * FROM utilisateurs WHERE Email = :email LIMIT 1';
         $stmt = $pdo->prepare($sql);
-
-        // On exécute en remplaçant :email par la valeur saisie
         $stmt->execute([':email' => $email]);
-
         $user = $stmt->fetch();
 
+        // password_verify() compare le mot de passe saisi avec
         if ($user && password_verify($mdp, $user['Motdepasse'])) {
 
-            // Si connexion réussie vas vers la caisse
+            $_SESSION['utilisateur'] = $user;
+
             header('Location: caisse.php');
-            exit; // Toujours mettre exit après header()
+            exit;
 
         } else {
             $erreur = 'Identifiant ou mot de passe incorrect.';
@@ -52,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <p>Logiciel de Caisse &amp; Gestion</p>
     </div>
 
-    <!-- Carte blanche contenant le formulaire -->
     <div class="connexion-card">
 
         <h2>Connexion utilisateur</h2>
@@ -61,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="alerte-erreur"><?= htmlspecialchars($erreur) ?></div>
         <?php endif; ?>
 
+        <!-- Formulaire de connexion -->
         <form method="POST" action="index.php">
 
             <label for="email">Identifiant / Email</label>
@@ -68,15 +73,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                    id="email"
                    name="email"
                    value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
-            <!-- htmlspecialchars() protège contre les injections HTML -->
-            <!-- ?? '' : si $_POST['email'] n'existe pas, on affiche vide -->
 
             <label for="motdepasse">Mot de passe</label>
             <div class="pwd-wrap">
                 <input type="password"
                        id="motdepasse"
                        name="motdepasse">
-                <!-- Bouton pour afficher/masquer le mot de passe -->
+                <!-- Bouton oeil pour afficher/masquer le mot de passe -->
                 <button type="button"
                         class="btn-eye"
                         onclick="var i=document.getElementById('motdepasse');

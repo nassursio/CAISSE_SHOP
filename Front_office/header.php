@@ -1,4 +1,5 @@
 <?php
+
 $page = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>
@@ -7,8 +8,6 @@ $page = basename($_SERVER['PHP_SELF']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CaisseShop</title>
-
-    <!-- Feuille de style globale -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -21,30 +20,27 @@ $page = basename($_SERVER['PHP_SELF']);
 
     <div class="navbar-sep"></div>
 
-    <!-- La classe "active" est ajoutée si on est sur la page correspondante -->
-    <div class="nav-links">
 
+    <div class="nav-links">
         <a href="caisse.php"
            class="nav-link <?= $page == 'caisse.php' ? 'active' : '' ?>">
-            Caisses
+           Caisses
         </a>
-
         <a href="produit.php"
-           class="nav-link <?= $page == 'produit.php' ? 'active' : '' ?>">
-            Produits
+           class="nav-link <?= ($page == 'produit.php' || $page == 'Detail_produit.php') ? 'active' : '' ?>">
+           Produits
         </a>
-
         <a href="vente.php"
            class="nav-link <?= $page == 'vente.php' ? 'active' : '' ?>">
-            Ventes
+           Ventes
         </a>
-
     </div>
 
-    <!-- Partie droite : nom utilisateur et déconnexion -->
     <div class="nav-right">
-        Utilisateur : <strong>Ali</strong>
-        <a href="index.php" class="nav-deconnexion">Déconnexion</a>
+        <?php if (!empty($_SESSION['utilisateur'])): ?>
+            Utilisateur : <strong><?= htmlspecialchars($_SESSION['utilisateur']['Prenom']) ?></strong>
+            <a href="logout.php" class="nav-deconnexion">Déconnexion</a>
+        <?php endif; ?>
     </div>
 
 </nav>
