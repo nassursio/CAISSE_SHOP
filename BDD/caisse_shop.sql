@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : jeu. 26 mars 2026 à 05:51
+-- Généré le : ven. 03 avr. 2026 à 13:37
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -34,7 +34,7 @@ CREATE TABLE `produit` (
   `description` varchar(250) NOT NULL,
   `stock` int(11) NOT NULL,
   `code_barre` varchar(100) NOT NULL,
-  `image` int(11) NOT NULL
+  `image` tinyblob NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -42,7 +42,7 @@ CREATE TABLE `produit` (
 --
 
 INSERT INTO `produit` (`Id`, `Nom_produit`, `prix`, `description`, `stock`, `code_barre`, `image`) VALUES
-(1, 'mataba', 10, 'mataba ou pas mataba', 100, '1616d16', 0);
+(1, 'mataba', 10, 'mataba ou pas mataba', 100, '1616d16', 0x30);
 
 -- --------------------------------------------------------
 
@@ -71,6 +71,13 @@ CREATE TABLE `utilisateurs` (
   `Email` varchar(50) NOT NULL,
   `Motdepasse` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `utilisateurs`
+--
+
+INSERT INTO `utilisateurs` (`Id`, `Nom`, `Prenom`, `Email`, `Motdepasse`) VALUES
+(1, 'nassur', 'naxo', 'nassur@gmail.com', 'nassur.1234');
 
 -- --------------------------------------------------------
 
@@ -134,7 +141,7 @@ ALTER TABLE `produit_vendu`
 -- AUTO_INCREMENT pour la table `utilisateurs`
 --
 ALTER TABLE `utilisateurs`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT pour la table `vente`
