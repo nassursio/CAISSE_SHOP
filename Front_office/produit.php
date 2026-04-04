@@ -5,9 +5,9 @@ require_once 'connexion.php';
 
 // Vérifier que l'utilisateur est connecté
 // Si pas de session, on redirige vers la page de connexion
-if (empty($_SESSION['utilisateur'])) {
-    header('Location: index.php'); exit;
-}
+//if (empty($_SESSION['utilisateur'])) {
+//    header('Location: index.php'); exit;
+//}
 
 $msg     = '';
 $msgType = 'succes';

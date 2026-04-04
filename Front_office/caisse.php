@@ -3,7 +3,7 @@
 require_once 'connexion.php';
 
 
-if (empty($_SESSION['utilisateur'])) { header('Location: index.php'); exit; }
+//if (empty($_SESSION['utilisateur'])) { header('Location: index.php'); exit; }
 
 if (!isset($_SESSION['ticket'])) {
     $_SESSION['ticket'] = [];

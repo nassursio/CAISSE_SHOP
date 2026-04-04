@@ -1,8 +1,8 @@
 <?php
 
-require_once 'connexion.php';
-if (session_status() === PHP_SESSION_NONE) session_start();
-if (empty($_SESSION['utilisateur'])) { header('Location: index.php'); exit; }
+//require_once 'connexion.php';
+//if (session_status() === PHP_SESSION_NONE) session_start();
+//if (empty($_SESSION['utilisateur'])) { header('Location: index.php'); exit; }
 
 // (int) empêche les caractères malveillants
 $id = (int) ($_GET['id'] ?? 0);
