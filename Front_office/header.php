@@ -1,12 +1,12 @@
 <?php
-
+session_start();
+if (!isset($_SESSION['user'])) { header('Location: index.php'); exit; }
 $page = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CaisseShop</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -14,33 +14,30 @@ $page = basename($_SERVER['PHP_SELF']);
 
 <nav class="navbar">
 
-    <a class="navbar-brand" href="caisse.php">
-        <span class="brand-caisse">Caisse</span><span class="brand-shop">Shop</span>
+    <!-- Logo -->
+    <a href="caisse.php" class="navbar-logo">
+        <img src="logo-removebg-preview.png" alt="CaisseShop">
     </a>
 
     <div class="navbar-sep"></div>
 
-
-    <div class="nav-links">
-        <a href="caisse.php"
-           class="nav-link <?= $page == 'caisse.php' ? 'active' : '' ?>">
-           Caisses
+    <!-- Liens navigation -->
+    <div class="navbar-liens">
+        <a href="caisse.php"  class="navbar-lien <?= $page=='caisse.php'  ?'actif':''?>">
+            <span class="icone">🖥</span> Caisses
         </a>
-        <a href="produit.php"
-           class="nav-link <?= ($page == 'produit.php' || $page == 'Detail_produit.php') ? 'active' : '' ?>">
-           Produits
+        <a href="produit.php" class="navbar-lien <?= $page=='produit.php'||$page=='Detail_produit.php' ?'actif':''?>">
+            <span class="icone">📦</span> Produits
         </a>
-        <a href="vente.php"
-           class="nav-link <?= $page == 'vente.php' ? 'active' : '' ?>">
-           Ventes
+        <a href="vente.php"   class="navbar-lien <?= $page=='vente.php'   ?'actif':''?>">
+            <span class="icone">📊</span> Ventes
         </a>
     </div>
 
-    <div class="nav-right">
-        <?php if (!empty($_SESSION['utilisateur'])): ?>
-            Utilisateur : <strong><?= htmlspecialchars($_SESSION['utilisateur']['Prenom']) ?></strong>
-            <a href="logout.php" class="nav-deconnexion">Déconnexion</a>
-        <?php endif; ?>
+    <!-- Utilisateur + Déconnexion à droite -->
+    <div class="navbar-droite">
+        <span>👤 Utilisateur : <strong><?= $_SESSION['user']['Prenom'] ?></strong></span>
+        <a href="logout.php" class="navbar-deconnexion">↪ Déconnexion</a>
     </div>
 
 </nav>
