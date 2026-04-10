@@ -3,13 +3,12 @@ require 'connexion.php';
 require 'header.php';
 
 // Filtre de date
-$filtre = $_GET['filtre'] ?? 'aujourd_hui';
-$dd     = $_GET['dd']     ?? date('Y-m-d');
-$df     = $_GET['df']     ?? date('Y-m-d');
+//$filtre = $_GET['filtre'] ?? 'aujourd_hui';
+//$dd     = $_GET['dd']     ?? date('Y-m-d');
+//$df     = $_GET['df']     ?? date('Y-m-d');
 
-if ($filtre == 'aujourd_hui') { $dd = date('Y-m-d'); $df = date('Y-m-d'); }
-if ($filtre == '7_jours')     { $dd = date('Y-m-d', strtotime('-7 days')); $df = date('Y-m-d'); }
-
+//if ($filtre == 'aujourd_hui') { $dd = date('Y-m-d'); $df = date('Y-m-d'); }
+//if ($filtre == '7_jours')     { $dd = date('Y-m-d', strtotime('-7 days')); $df = date('Y-m-d'); }
 // Récupérer les ventes
 $req = $pdo->prepare('SELECT v.*, u.Prenom, u.Nom, MIN(p.stock) AS stock_min
                       FROM vente v
@@ -18,7 +17,7 @@ $req = $pdo->prepare('SELECT v.*, u.Prenom, u.Nom, MIN(p.stock) AS stock_min
                       JOIN produit p        ON p.Id = pv.id_produit
                       WHERE DATE(v.Date) BETWEEN :d1 AND :d2
                       GROUP BY v.Id, v.Date, v.Montant, v.total_produit, u.Prenom, u.Nom
-                      ORDER BY v.Date DESC');
+                     ORDER BY v.Date DESC');
 $req->execute([':d1'=>$dd, ':d2'=>$df]);
 $ventes = $req->fetchAll();
 
@@ -57,10 +56,6 @@ if (isset($_GET['detail'])) {
         <a href="vente.php?filtre=7_jours&dd=<?=$dd?>&df=<?=$df?>"
            class="<?= $filtre=='7_jours'?'btn-filtre-actif':'btn-filtre-inactif'?>">
             7 jours
-        </a>
-        <a href="vente.php?filtre=perso&dd=<?=$dd?>&df=<?=$df?>"
-           class="<?= $filtre=='perso'?'btn-filtre-actif':'btn-filtre-inactif'?>">
-            Personnalisé
         </a>
 
         <!-- Dates personnalisées -->
@@ -109,7 +104,7 @@ if (isset($_GET['detail'])) {
                 <?php foreach ($ventes as $v):
                     $sm = (int)$v['stock_min'];
                     if ($sm == 0)      { $badge = 'badge-rouge-plein'; $txt = 'Rupture proche'; }
-                    elseif ($sm <= 5)  { $badge = 'badge-orange-plein'; $txt = 'Stock faible'; }
+                    elseif ($sm <= 10)  { $badge = 'badge-orange-plein'; $txt = 'Stock faible'; }
                     else               { $badge = 'badge-vert-plein'; $txt = 'Stock suffisant'; }
                 ?>
                 <tr>
@@ -122,8 +117,8 @@ if (isset($_GET['detail'])) {
                     <td><span class="badge-articles"><?= $v['total_produit'] ?> articles</span></td>
                     <td><span class="badge-statut <?= $badge ?>"><?= $txt ?></span></td>
                     <td>
-                        <a href="vente.php?detail=<?= $v['Id'] ?>&filtre=<?=$filtre?>&dd=<?=$dd?>&df=<?=$df?>"
-                           class="lien-detail">Détail</a>
+                        <a href="detail_vente.php?id=<?= $v['Id'] ?>" class="action-edit" 
+                            title="Détail vente"> Détail</a>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -131,31 +126,6 @@ if (isset($_GET['detail'])) {
             </tbody>
         </table>
     </div>
-
-    <!-- Détail d'une vente -->
-    <?php if ($detail): ?>
-    <div class="historique-carte" style="margin-top:1rem">
-        <div class="historique-entete">
-            <p class="historique-titre">Détail — vente du <?= date('d/m/Y H:i', strtotime($detail['Date'])) ?> (<?= $detail['Prenom'] ?>)</p>
-            <a href="vente.php?filtre=<?=$filtre?>&dd=<?=$dd?>&df=<?=$df?>" class="btn-filtre-inactif">Fermer</a>
-        </div>
-        <table class="ventes-table">
-            <thead><tr><th>PRODUIT</th><th>QUANTITÉ</th><th>TOTAL</th></tr></thead>
-            <tbody>
-            <?php foreach ($lignes as $l): ?>
-            <tr>
-                <td><?= $l['Nom_produit'] ?></td>
-                <td><?= $l['quantite'] ?></td>
-                <td><strong><?= number_format($l['prix_total'],2,',',' ') ?> €</strong></td>
-            </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
-        <div style="text-align:right;padding:.8rem 1rem;font-weight:700">
-            Total : <?= number_format($detail['Montant'],2,',',' ') ?> €
-        </div>
-    </div>
-    <?php endif; ?>
 
 </div>
 

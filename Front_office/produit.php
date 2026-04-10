@@ -14,7 +14,6 @@ if (isset($_POST['ajouter'])) {
 // Supprimer un produit
 if (isset($_GET['supprimer'])) {
     $pdo->prepare('DELETE FROM produit WHERE Id=:id')->execute([':id'=>$_GET['supprimer']]);
-    $message = 'Produit supprimé.';
 }
 
 // Récupérer les produits
@@ -37,7 +36,7 @@ $produits = $req->fetchAll();
                 <input type="text" id="search" placeholder="Rechercher un produit..."
                        oninput="filtrerProduits(this.value)">
             </div>
-            <a href="Detail_produit.php?nouveau=1" class="btn-ajouter-produit">+ Ajouter produit</a>
+            <a href="ajout_produit.php?nouveau=1" class="btn-ajouter-produit">+ Ajouter produit</a>
         </div>
     </div>
 
@@ -83,9 +82,6 @@ $produits = $req->fetchAll();
         <!-- Pied de tableau -->
         <div class="pagination">
             <span>Affichage de 1 à <?= count($produits) ?> sur <?= count($produits) ?> produits</span>
-            <div style="display:flex;gap:.5rem">
-                <a href="#" class="btn-export-csv">⬇ Exporter CSV</a>
-            </div>
         </div>
     </div>
 
@@ -98,7 +94,23 @@ function filtrerProduits(q) {
     lignes.forEach(function(tr) {
         const texte = tr.textContent.toLowerCase();
         tr.style.display = texte.includes(q.toLowerCase()) ? '' : 'none';
+
+
+     function convertirScan(code){
+        return code.replaceAll("Shift", "") 
+        .replaceAll("à", "0")
+        .replaceAll("&", "1")
+        .replaceAll("é", "2")
+        .replaceAll("\"", "3")
+        .replaceAll("'", "4")
+        .replaceAll("(", "5")
+        .replaceAll("-", "6")
+        .replaceAll("è", "7")
+        .replaceAll("_", "8")
+        .replaceAll("ç", "9");
+}      
     });
+    
 }
 </script>
 

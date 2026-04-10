@@ -44,3 +44,12 @@ function afficherProduits(){
 }
 
 
+
+// Filtrer les produits en temps réel
+function filtrerProduits(q) {
+    const lignes = document.querySelectorAll('#table-produits tbody tr');
+    lignes.forEach(function(tr) {
+        const texte = tr.textContent.toLowerCase();
+        tr.style.display = texte.includes(q.toLowerCase()) ? '' : 'none';
+    });
+}

@@ -4,7 +4,6 @@ require 'header.php';
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-//  MODIFICATION
 if (isset($_POST['modifier'])) {
 
     $req = $pdo->prepare("

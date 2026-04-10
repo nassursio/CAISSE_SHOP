@@ -137,7 +137,7 @@ foreach ($_SESSION['ticket'] as $l) $total += $l['prix'] * $l['quantite'];
                 <thead>
                     <tr>
                         <th>Désignation</th>
-                        <th>PU</th>
+                        <th>Prix</th>
                         <th>Stock restant</th>
                         <th>Total</th>
                     </tr>
@@ -176,7 +176,7 @@ foreach ($_SESSION['ticket'] as $l) $total += $l['prix'] * $l['quantite'];
             <!-- Boutons Suppr / Vider / Valider -->
             <div class="ticket-btns-haut">
                 <?php $cle = !empty($_SESSION['ticket']) ? array_key_last($_SESSION['ticket']) : 0; ?>
-                <a href="caisse.php?supprimer=<?= $cle ?>" class="btn-suppr">🗑 Suppr ligne</a>
+                <a href="caisse.php?supprimer=<?= $cle ?>" class="btn-suppr"> Supprimer</a>
                 <a href="caisse.php?vider=1" onclick="return confirm('Vider ?')" class="btn-vider">✕ Vider</a>
                 <form method="POST" style="display:contents">
                     <button type="submit" name="valider" class="btn-valider">✓ VALIDER</button>
