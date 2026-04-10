@@ -16,7 +16,7 @@ $page = basename($_SERVER['PHP_SELF']);
 
     <!-- Logo -->
     <a href="caisse.php" class="navbar-logo">
-        <img src="logo-removebg-preview.png" alt="CaisseShop">
+        <img src="../image/logo-removebg-preview.png" alt="CaisseShop">
     </a>
 
     <div class="navbar-sep"></div>

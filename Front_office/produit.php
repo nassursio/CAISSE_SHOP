@@ -4,107 +4,103 @@ require 'header.php';
 
 $message = '';
 
-// ─── AJOUTER un produit ───────────────────────────────────
+// Ajouter un produit
 if (isset($_POST['ajouter'])) {
-
-    $req = $pdo->prepare('INSERT INTO produit (Nom_produit, prix, description, stock, code_barre, image)
-                          VALUES (:nom, :prix, :desc, :stock, :cb, 0)');
-
-    $req->execute([
-        ':nom'   => $_POST['nom'],
-        ':prix'  => $_POST['prix'],
-        ':desc'  => $_POST['description'],
-        ':stock' => $_POST['stock'],
-        ':cb'    => $_POST['code_barre'],
-    ]);
-
+    $req = $pdo->prepare('INSERT INTO produit (Nom_produit,prix,description,stock,code_barre,image) VALUES (:n,:p,:d,:s,:c,0)');
+    $req->execute([':n'=>$_POST['nom'],':p'=>$_POST['prix'],':d'=>$_POST['description'],':s'=>$_POST['stock'],':c'=>$_POST['code_barre']]);
     $message = 'Produit ajouté !';
 }
 
-// ─── MODIFIER un produit ──────────────────────────────────
-if (isset($_POST['modifier'])) {
-
-    $req = $pdo->prepare('UPDATE produit
-                          SET Nom_produit=:nom, prix=:prix, description=:desc,
-                              stock=:stock, code_barre=:cb
-                          WHERE Id=:id');
-
-    $req->execute([
-        ':nom'   => $_POST['nom'],
-        ':prix'  => $_POST['prix'],
-        ':desc'  => $_POST['description'],
-        ':stock' => $_POST['stock'],
-        ':cb'    => $_POST['code_barre'],
-        ':id'    => $_POST['id'],
-    ]);
-
-    $message = 'Produit modifié !';
-}
-
-// ─── SUPPRIMER un produit ─────────────────────────────────
+// Supprimer un produit
 if (isset($_GET['supprimer'])) {
-    $req = $pdo->prepare('DELETE FROM produit WHERE Id = :id');
-    $req->execute([':id' => $_GET['supprimer']]);
+    $pdo->prepare('DELETE FROM produit WHERE Id=:id')->execute([':id'=>$_GET['supprimer']]);
     $message = 'Produit supprimé.';
 }
 
-// ─── RÉCUPÉRER tous les produits ──────────────────────────
+// Récupérer les produits
 $req      = $pdo->query('SELECT * FROM produit ORDER BY Id DESC');
 $produits = $req->fetchAll();
-
-// ─── Charger un produit pour le modifier ──────────────────
-$produit_a_modifier = null;
-if (isset($_GET['modifier'])) {
-    $req = $pdo->prepare('SELECT * FROM produit WHERE Id = :id');
-    $req->execute([':id' => $_GET['modifier']]);
-    $produit_a_modifier = $req->fetch();
-}
 ?>
 
 <div class="contenu">
 
-    <?php if ($message != '') : ?>
-        <p class="succes"><?= $message ?></p>
+    <?php if ($message): ?>
+        <div class="msg-succes"><?= $message ?></div>
     <?php endif; ?>
 
-    <div class="deux-colonnes">
-
-        <!-- Liste des produits -->
-        <div class="carte">
-            <h2>Liste des produits</h2>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Code-barres</th>
-                        <th>Nom</th>
-                        <th>Prix</th>
-                        <th>Stock</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                <?php foreach ($produits as $p) : ?>
-                    <tr>
-                        <td><?= $p['code_barre'] ?></td>
-                        <td><?= $p['Nom_produit'] ?></td>
-                        <td><?= $p['prix'] ?> €</td>
-                        <td><?= $p['stock'] ?></td>
-                        <td>
-                            <a href="Detail_produit.php?id=<?= $p['Id'] ?>">Détail</a>
-                            <a href="produit.php?modifier=<?= $p['Id'] ?>">Modifier</a>
-                            <a href="produit.php?supprimer=<?= $p['Id'] ?>"
-                               onclick="return confirm('Supprimer ?')">Supprimer</a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-                </tbody>
-            </table>
+    <!-- Titre + barre de recherche + bouton ajouter -->
+    <div class="page-titre-barre">
+        <h1 class="page-titre">Liste des produits</h1>
+        <div class="search-produit">
+            <div class="search-produit-input">
+                <span></span>
+                <input type="text" id="search" placeholder="Rechercher un produit..."
+                       oninput="filtrerProduits(this.value)">
+            </div>
+            <a href="Detail_produit.php?nouveau=1" class="btn-ajouter-produit">+ Ajouter produit</a>
         </div>
-<button type="button" onclick="window.location.href='ajout_produit.php'">Ajouter un produit</button>
-
     </div>
+
+    <!-- Tableau des produits -->
+    <div class="produit-tableau">
+        <table id="table-produits">
+            <thead>
+                <tr>
+                    <th>CODE</th>
+                    <th>NOM</th>
+                    <th>PRIX TTC</th>
+                    <th>STOCK</th>
+                    <th>ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($produits as $p):
+                $stk = $p['stock'];
+                if ($stk == 0)      $badge = 'badge-rouge';
+                elseif ($stk <= 15) $badge = 'badge-orange';
+                else                $badge = 'badge-vert';
+            ?>
+            <tr>
+                <td class="prod-code"><?= $p['code_barre'] ?></td>
+                <td>
+                    <span class="prod-nom"><?= $p['Nom_produit'] ?></span>
+                </td>
+                <td><?= number_format($p['prix'], 2, ',', ' ') ?> €</td>
+                <td>
+                    <span class="badge-stock <?= $badge ?>"><?= $stk ?></span>
+                </td>
+                <td>
+                    <a href="Detail_produit.php?id=<?= $p['Id'] ?>" class="action-edit" title="Modifier">✏️</a>
+                    <a href="produit.php?supprimer=<?= $p['Id'] ?>"
+                       onclick="return confirm('Supprimer ce produit ?')"
+                       class="action-del" title="Supprimer">🗑</a>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+
+        <!-- Pied de tableau -->
+        <div class="pagination">
+            <span>Affichage de 1 à <?= count($produits) ?> sur <?= count($produits) ?> produits</span>
+            <div style="display:flex;gap:.5rem">
+                <a href="#" class="btn-export-csv">⬇ Exporter CSV</a>
+            </div>
+        </div>
+    </div>
+
 </div>
+
+<script>
+// Filtrer les produits en temps réel
+function filtrerProduits(q) {
+    const lignes = document.querySelectorAll('#table-produits tbody tr');
+    lignes.forEach(function(tr) {
+        const texte = tr.textContent.toLowerCase();
+        tr.style.display = texte.includes(q.toLowerCase()) ? '' : 'none';
+    });
+}
+</script>
 
 </body>
 </html>
