@@ -78,7 +78,7 @@ foreach ($_SESSION['ticket'] as $l) $total += $l['prix'] * $l['quantite'];
                placeholder="Rechercher un produit (nom, référence...)" autofocus>
         <button type="submit" class="btn-rechercher">Rechercher</button>
         <div class="scan-zone">
-            <span>|||</span>
+            <span></span>
             <div>
                 <strong>SCAN CODE-BARRES</strong>
                 <small>Présentez le produit devant le lecteur</small>

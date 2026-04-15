@@ -5,6 +5,7 @@
    Orange : #F57C00
    Navbar : blanche, fine
    ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">');
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
@@ -138,6 +139,13 @@ body.page-connexion {
     z-index: 100;
 }
 
+.icone {
+    font-family: 'Material Symbols Outlined';
+    font-size: 18px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+}
 .navbar-logo img {
     height: 32px;
     width: auto;
