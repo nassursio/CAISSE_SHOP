@@ -2,45 +2,32 @@
 require 'connexion.php';
 require 'header.php';
 
-$message = '';
-
-// Ajouter un produit
-if (isset($_POST['ajouter'])) {
-    $req = $pdo->prepare('INSERT INTO produit (Nom_produit,prix,description,stock,code_barre,image) VALUES (:n,:p,:d,:s,:c,0)');
-    $req->execute([':n'=>$_POST['nom'],':p'=>$_POST['prix'],':d'=>$_POST['description'],':s'=>$_POST['stock'],':c'=>$_POST['code_barre']]);
-    $message = 'Produit ajouté !';
-}
-
 // Supprimer un produit
 if (isset($_GET['supprimer'])) {
-    $pdo->prepare('DELETE FROM produit WHERE Id=:id')->execute([':id'=>$_GET['supprimer']]);
+    $pdo->prepare('DELETE FROM produit WHERE Id = :id')->execute([':id' => $_GET['supprimer']]);
 }
 
-// Récupérer les produits
+// Récupérer tous les produits
 $req      = $pdo->query('SELECT * FROM produit ORDER BY Id DESC');
 $produits = $req->fetchAll();
 ?>
 
 <div class="contenu">
 
-    <?php if ($message): ?>
-        <div class="msg-succes"><?= $message ?></div>
-    <?php endif; ?>
-
-    <!-- Titre + barre de recherche + bouton ajouter -->
+    <!-- Titre + recherche + bouton ajouter -->
     <div class="page-titre-barre">
         <h1 class="page-titre">Liste des produits</h1>
-        <div class="search-produit">
+        <div style="display:flex; gap:.6rem; align-items:center;">
             <div class="search-produit-input">
-                <span></span>
-                <input type="text" id="search" placeholder="Rechercher un produit..."
+                <span>🔍</span>
+                <input type="text" placeholder="Rechercher un produit..."
                        oninput="filtrerProduits(this.value)">
             </div>
-            <a href="ajout_produit.php?nouveau=1" class="btn-ajouter-produit">+ Ajouter produit</a>
+            <a href="ajout_produit.php" class="btn-ajouter-produit">+ Ajouter produit</a>
         </div>
     </div>
 
-    <!-- Tableau des produits -->
+    <!-- Tableau -->
     <div class="produit-tableau">
         <table id="table-produits">
             <thead>
@@ -61,56 +48,29 @@ $produits = $req->fetchAll();
             ?>
             <tr>
                 <td class="prod-code"><?= $p['code_barre'] ?></td>
-                <td>
-                    <span class="prod-nom"><?= $p['Nom_produit'] ?></span>
-                </td>
+                <td><span class="prod-nom"><?= $p['Nom_produit'] ?></span></td>
                 <td><?= number_format($p['prix'], 2, ',', ' ') ?> €</td>
+                <td><span class="badge-stock <?= $badge ?>"><?= $stk ?></span></td>
                 <td>
-                    <span class="badge-stock <?= $badge ?>"><?= $stk ?></span>
-                </td>
-                <td>
-                    <a href="Detail_produit.php?id=<?= $p['Id'] ?>" class="action-edit" title="Modifier">✏️</a>
+                    <a href="Detail_produit.php?id=<?= $p['Id'] ?>" class="action-edit">✏️</a>
                     <a href="produit.php?supprimer=<?= $p['Id'] ?>"
                        onclick="return confirm('Supprimer ce produit ?')"
-                       class="action-del" title="Supprimer">🗑</a>
+                       class="action-del">🗑</a>
                 </td>
             </tr>
             <?php endforeach; ?>
             </tbody>
         </table>
 
-        <!-- Pied de tableau -->
-        <div class="pagination">
-            <span>Affichage de 1 à <?= count($produits) ?> sur <?= count($produits) ?> produits</span>
-        </div>
     </div>
 
 </div>
 
 <script>
-// Filtrer les produits en temps réel
 function filtrerProduits(q) {
-    const lignes = document.querySelectorAll('#table-produits tbody tr');
-    lignes.forEach(function(tr) {
-        const texte = tr.textContent.toLowerCase();
-        tr.style.display = texte.includes(q.toLowerCase()) ? '' : 'none';
-
-
-     function convertirScan(code){
-        return code.replaceAll("Shift", "") 
-        .replaceAll("à", "0")
-        .replaceAll("&", "1")
-        .replaceAll("é", "2")
-        .replaceAll("\"", "3")
-        .replaceAll("'", "4")
-        .replaceAll("(", "5")
-        .replaceAll("-", "6")
-        .replaceAll("è", "7")
-        .replaceAll("_", "8")
-        .replaceAll("ç", "9");
-}      
+    document.querySelectorAll('#table-produits tbody tr').forEach(function(tr) {
+        tr.style.display = tr.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
     });
-    
 }
 </script>
 

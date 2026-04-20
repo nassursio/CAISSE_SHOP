@@ -2,99 +2,98 @@
 require 'connexion.php';
 require 'header.php';
 
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$id      = (int)($_GET['id'] ?? 0);
+$message = '';
 
+// Enregistrer les modifications
 if (isset($_POST['modifier'])) {
-
-    $req = $pdo->prepare("
-        UPDATE produit SET
-        code_barre = :code_barre,
-        Nom_produit = :nom,
-        description = :description,
-        prix = :prix,
-        stock = :stock
-        WHERE Id = :id
-    ");
-
+    $req = $pdo->prepare('UPDATE produit SET code_barre=:c, Nom_produit=:n, description=:d, prix=:p, stock=:s WHERE Id=:id');
     $req->execute([
-        ':code_barre' => $_POST['code_barre'],
-        ':nom' => $_POST['nom'],
-        ':description' => $_POST['description'],
-        ':prix' => $_POST['prix'],
-        ':stock' => $_POST['stock'],
-        ':id' => $_POST['id']
+        ':c'  => $_POST['code_barre'],
+        ':n'  => $_POST['nom'],
+        ':d'  => $_POST['description'],
+        ':p'  => $_POST['prix'],
+        ':s'  => $_POST['stock'],
+        ':id' => $_POST['id'],
     ]);
-
-    echo "<p style='color:green'>Produit modifié avec succès</p>";
+    $message = 'Produit modifié avec succès !';
 }
 
-//  RÉCUP PRODUIT
-$req = $pdo->prepare("SELECT * FROM produit WHERE Id = :id");
+// Récupérer le produit
+$req = $pdo->prepare('SELECT * FROM produit WHERE Id = :id');
 $req->execute([':id' => $id]);
 $p = $req->fetch();
 
-if (!$p) {
-    echo "Produit introuvable";
-    exit;
-}
+if (!$p) { echo "Produit introuvable."; exit; }
 ?>
 
 <div class="contenu">
 
-    <a href="produit.php">← Retour liste</a>
+    <a href="produit.php" class="retour-lien">← Retour liste</a>
 
-    <div class="carte" style="display:flex; gap:2rem; margin-top:1rem">
+    <?php if ($message): ?>
+        <div class="msg-succes"><?= $message ?></div>
+    <?php endif; ?>
 
-        <!-- IMAGE -->
-        <div style="flex:1">
-            <img src="image_produit.png" style="width:100%; max-width:300px">
+    <div class="detail-carte">
 
-            <p style="margin-top:1rem">CODE-BARRES GÉNÉRÉ</p>
-            <img src="barcode.png" style="width:150px">
+        <!-- Colonne gauche : image + code-barres -->
+        <div class="detail-gauche">
 
-            <br><br>
-            <button>📷 modifier la photo</button>
+            <div class="detail-image-zone">
+                <span style="color:#9CA3AF;font-size:.85rem">Pas d'image</span>
+            </div>
+
+            <div class="codebarre-section">
+                <p class="codebarre-label">CODE-BARRES GÉNÉRÉ</p>
+                <div class="codebarre-zone">
+                    <div class="codebarre-barres">
+                        <?php
+                        // Barres visuelles basées sur le code
+                        foreach (str_split($p['code_barre']) as $i => $c) {
+                            $w = ($i % 3 == 0) ? 3 : 1;
+                            echo "<div style='width:{$w}px;height:48px;background:#1A1A2E;'></div>";
+                        }
+                        ?>
+                    </div>
+                    <div class="codebarre-numero"><?= $p['code_barre'] ?></div>
+                </div>
+            </div>
+
+            <button class="btn-modifier-photo">📷 modifier la photo</button>
+
         </div>
 
-        <!-- FORMULAIRE -->
-        <div style="flex:2">
+        <!-- Colonne droite : formulaire -->
+        <div class="detail-droite">
             <h2>Édition Produit</h2>
 
             <form method="POST">
-
                 <input type="hidden" name="id" value="<?= $p['Id'] ?>">
 
                 <label>Référence / Code-barres</label>
-                <input type="text" name="code_barre"
-                    value="<?= htmlspecialchars($p['code_barre']) ?>">
+                <input type="text" name="code_barre" value="<?= htmlspecialchars($p['code_barre']) ?>">
 
                 <label>Nom produit</label>
-                <input type="text" name="nom"
-                    value="<?= htmlspecialchars($p['Nom_produit']) ?>">
+                <input type="text" name="nom" value="<?= htmlspecialchars($p['Nom_produit']) ?>">
 
                 <label>Description</label>
                 <textarea name="description"><?= htmlspecialchars($p['description']) ?></textarea>
 
-                <div style="display:flex; gap:1rem">
+                <div class="detail-prix-stock">
                     <div>
-                        <label>Prix (€)</label>
-                        <input type="number" step="0.01" name="prix"
-                            value="<?= htmlspecialchars($p['prix']) ?>">
+                        <label>Prix TTC (€)</label>
+                        <input type="number" step="0.01" name="prix" value="<?= $p['prix'] ?>">
                     </div>
-
                     <div>
-                        <label>Stock</label>
-                        <input type="number" name="stock"
-                            value="<?= htmlspecialchars($p['stock']) ?>">
+                        <label>Stock actuel</label>
+                        <input type="number" name="stock" value="<?= $p['stock'] ?>">
                     </div>
                 </div>
 
-                <br>
+                <button type="button" class="btn-generer-cb">|||| Générer code-barres</button>
 
-                <button type="submit" name="modifier">
-                     Enregistrer
-                </button>
-
+                <button type="submit" name="modifier" class="btn-enregistrer">💾 Enregistrer</button>
             </form>
         </div>
 
